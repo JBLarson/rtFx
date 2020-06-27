@@ -2,10 +2,6 @@ from pandas import DataFrame
 import pandas as pd
 import numpy as np
 
-#the event the two options relate to
-#contract = "USD/JPY>108"
-#contract = "AUD/USD"
-
 contract = "USD/JPY"
 
 b1str, b1avgp, b1size = float(109.25), 51, 100
