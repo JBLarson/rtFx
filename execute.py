@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
 
-import binput2 as inp
+import input_forex as inp
 
 ro = lambda n : round(n, ndigits=2)
 rp = lambda n : round(n, ndigits=4)
@@ -117,14 +117,10 @@ def all_plot():
 	plt.legend(loc='upper left')
 	plt.show()
 
-print(net_rez)
-
-
 #b1_plot()
 #s1_plot()
 #b12_plot()
 #net_plot()
-
 #all_plot()
 quad_plot()
 
