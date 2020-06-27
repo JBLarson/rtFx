@@ -13,5 +13,3 @@ b1r, s1r = b1avgp * b1size, (100 - s1avgp) * s1size
 b1w, s1w = 100*b1size - (b1r), (abs(s1size)*s1avgp)
 
 strike_range = np.arange(109.04, 110.04, .1)
-
-print(strike_range)
