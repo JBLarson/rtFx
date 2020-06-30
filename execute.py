@@ -1,106 +1,97 @@
-import matplotlib.pyplot as plt
+#import packages
+import tkinter
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+import numpy as np
 
+#import forex input module
 import input_forex as inp
 
-ro = lambda n : round(n, ndigits=2)
-rp = lambda n : round(n, ndigits=4)
+#localize initial set (strike range), pointed sets (b1 / s1), and cartesian product (net)
+strike_range = inp.stk_rng
+net_results = inp.net_rez
+b1_results = inp.b1_rez
+s1_results = inp.s1_rez
 
-b1s, b1w, b1r = inp.b1str, inp.b1w, inp.b1r
-s1s, s1w, s1r = abs(inp.s1str), inp.s1w, inp.s1r
-contract = inp.contract
-stk_rng = inp.strike_range
+#forex buy mpl tkinter function
+def buy_plot():
+    root = tkinter.Tk()
+    root.wm_title("Buy USD/JPY>109.25")
+    fig = Figure(figsize=(8, 6), dpi=100)
 
-b1_rez = [b1w if stk >= b1s else -b1r for stk in stk_rng]
-s1_rez = [s1w if stk < s1s else -s1r for stk in stk_rng]
+    fig.add_subplot(111).stackplot(strike_range, b1_results, labels=['b1'])
+    #fig.add_subplot(111).stackplot(strike_range, s1_results, labels=['s1'])
 
-net_rez = [b1_rez[i]+s1_rez[i] for i in range(len(b1_rez))]
-all_rez = [b1_rez, s1_rez, net_rez]
+    canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+    toolbar = NavigationToolbar2Tk(canvas, root)
+    toolbar.update()
+    canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 
-b1T, s1T, b1T2, s1T2 = inp.b1T, inp.s1T, inp.b1T2, inp.s1T2
-
-def quad_plot():
-	fig = plt.figure(figsize=(10,6))
-	ax1, ax2 = fig.add_subplot(221), fig.add_subplot(222)
-	ax3, ax4 = fig.add_subplot(223), fig.add_subplot(224)
-	b1pl = ax1.stackplot(stk_rng, b1_rez, labels=['b1'])
-	ax1.set_title(b1T2)
-	ax1.set_ylabel('Result ($)', fontsize=16)
-	ax1.set_xticks([])
-	s1pl = ax2.stackplot(stk_rng, s1_rez, labels=['s1'])
-	ax2.set_title(s1T2)
-	ax2.set_xticks([])
-	netpl = ax3.stackplot(stk_rng, net_rez, labels=['net'])
-	ax3.set_ylabel('Result ($)', fontsize=16)
-	ax3.set_xlabel('Strike Price', fontsize=16)
-	ax3.set_title('Net Outcome')
-	b1plo = ax4.stackplot(stk_rng, b1_rez, labels=['b1'])
-	s1plo = ax4.stackplot(stk_rng, s1_rez, labels=['s1'])
-	netplo = ax4.stackplot(stk_rng, net_rez, labels=['net'])
-	ax4.set_title("Buy, Sell, and Net")
-	ax4.set_xlabel('Strike Price', fontsize=16)
-	plt.show()
+    def on_key_press(event):
+        print("you pressed {}".format(event.key))
+        key_press_handler(event, canvas, toolbar)
+    canvas.mpl_connect("key_press_event", on_key_press)
+    def _quit():
+        root.quit()     # stops mainloop
+        root.destroy()  # this is necessary on Windows to prevent Error
+    button = tkinter.Button(master=root, text="Quit", command=_quit)
+    button.pack(side=tkinter.BOTTOM)
+    tkinter.mainloop()
 
 
-def b12_plot():
-	fig = plt.figure(figsize=(10,6))
-	ax1, ax2 = fig.add_subplot(211), fig.add_subplot(212)
-	b1pl = ax1.stackplot(stk_rng, b1_rez, labels=['b1'])
-	ax1.set_title(b1T2, fontsize=18)
-	ax1.set_xticks([])
-	ax1.set_ylabel('Result ($)', fontsize=16)
-	s1pl = ax2.stackplot(stk_rng, s1_rez, labels=['s1'])
-	ax2.set_title(s1T2, fontsize=18)
-	ax2.set_ylabel('Result ($)', fontsize=16)
-	ax2.set_xlabel('Strike Price', fontsize=16)
-	plt.show()
+#forex sell mpl tkinter function
+def sell_plot():
+    root = tkinter.Tk()
+    root.wm_title("Sell USD/JPY>109.44")
+    fig = Figure(figsize=(8, 6), dpi=100)
+    fig.add_subplot(111).stackplot(strike_range, s1_results, labels=['s1'])
+    canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+    toolbar = NavigationToolbar2Tk(canvas, root)
+    toolbar.update()
+    canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+
+    def on_key_press(event):
+        print("you pressed {}".format(event.key))
+        key_press_handler(event, canvas, toolbar)
+    canvas.mpl_connect("key_press_event", on_key_press)
+    def _quit():
+        root.quit()     # stops mainloop
+        root.destroy()  # this is necessary on Windows to prevent
+    button = tkinter.Button(master=root, text="Quit", command=_quit)
+    button.pack(side=tkinter.BOTTOM)
+    tkinter.mainloop()
 
 
-def b1_plot():
-	fig = plt.figure(figsize=(10,6))
-	ax1 = fig.add_subplot(111)
-	b1pl = ax1.stackplot(stk_rng, b1_rez, labels=['b1'])
-	ax1.set_title(b1T, fontsize=20)
-	ax1.set_ylabel('Result ($)', fontsize=16)
-	ax1.set_xlabel('Strike Price', fontsize=16)
-	plt.show()
-
-
-def s1_plot():
-	fig = plt.figure(figsize=(10,6))
-	ax1 = fig.add_subplot(111)
-	b1pl = ax1.stackplot(stk_rng, s1_rez, labels=['s1'])
-	ax1.set_title(s1T, fontsize=20)
-	ax1.set_ylabel('Result ($)', fontsize=16)
-	ax1.set_xlabel('Strike Price', fontsize=16)
-	plt.show()
-
-
-
+#forex net mpl tkinter function
 def net_plot():
-	fig = plt.figure(figsize=(10,6))
-	ax1 = fig.add_subplot(111)
-	b1pl = ax1.stackplot(stk_rng, net_rez, labels=['net'])
-	ax1.set_title('Net', fontsize=20)
-	ax1.set_ylabel('Result ($)', fontsize=16)
-	ax1.set_xlabel('Strike Price', fontsize=16)
-	plt.show()
+    root = tkinter.Tk()
+    root.wm_title("Buy USD/JPY>109.25 Sell USD/JPY>109.44 - Net Position")
+    fig = Figure(figsize=(8, 6), dpi=100)
+    fig.add_subplot(111).stackplot(strike_range, net_results, labels=['net'])
+    canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+    toolbar = NavigationToolbar2Tk(canvas, root)
+    toolbar.update()
+    canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 
+    def on_key_press(event):
+        print("you pressed {}".format(event.key))
+        key_press_handler(event, canvas, toolbar)
+    canvas.mpl_connect("key_press_event", on_key_press)
+    def _quit():
+        root.quit()     # stops mainloop
+        root.destroy()  # this is necessary on Windows to prevent
+    button = tkinter.Button(master=root, text="Quit", command=_quit)
+    button.pack(side=tkinter.BOTTOM)
+    tkinter.mainloop()
 
-def all_plot():
-	fig = plt.figure(figsize=(10,6))
-	ax4 = fig.add_subplot(111)
-	b1plo = ax4.stackplot(stk_rng, b1_rez, labels=['b1'])
-	s1plo = ax4.stackplot(stk_rng, s1_rez, labels=['s1'])
-	netplo = ax4.stackplot(stk_rng, net_rez, labels=['net'])
-
-	ax4.set_title('Buy, Sell, and Net', fontsize=20)
-	ax4.set_ylabel('Result ($)', fontsize=16)
-	plt.legend(loc='upper left')
-	plt.show()
-
-#b1_plot()
-#s1_plot()
-#b12_plot()
-#net_plot()
-#all_plot()
-quad_plot()
+buy_plot()
+sell_plot()
+net_plot()
