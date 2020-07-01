@@ -9,7 +9,7 @@ ax1, ax2 = fig.add_subplot(221), fig.add_subplot(222)
 ax3, ax4 = fig.add_subplot(223), fig.add_subplot(224)
 
 
-def animate(i):
+def animate():
     pullData = open("results.txt","r").read()
     dataArray = pullData.split('\n')
     pts, net, b1, s1 = [], [], [], []
