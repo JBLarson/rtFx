@@ -25,7 +25,7 @@ net_rez = [b1_rez[i]+s1_rez[i] for i in range(len(b1_rez))]
 b1T, s1T = "Buy " + contract + str(b1str), "Sell " + contract + str(s1str)
 
 
-def fx_write():
+def test_fx_write():
 
 	with open('results.txt', 'w') as f:
 		for n in range(0,len(stk_rng)): print(stk_rng[n], ',', net_rez[n], file=f)
@@ -33,4 +33,4 @@ def fx_write():
 	with open('b1s1.txt', 'w') as f:
 		for n in range(0,len(stk_rng)): print(b1_rez[n], ',', s1_rez[n], file=f)
 
-fx_write()
+test_fx_write()
