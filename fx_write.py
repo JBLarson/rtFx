@@ -34,5 +34,3 @@ def fx_write():
 		for n in range(0,len(stk_rng)): print(b1_rez[n], ',', s1_rez[n], file=f)
 
 fx_write()
-
-print(s1_rez)
