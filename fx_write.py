@@ -6,12 +6,12 @@ ro = lambda n : round(n, ndigits=2)
 
 contract, stk_rng = "USD/JPY>", np.arange(108.50, 109.50, .1)
 
-b1str, b1avgp, b1size = float(109.25), 59, 4
+b1str, b1avgp, b1size = float(109.15), 59, 4
 
 s1a = True
 
-if s1a == True: s1str, s1avgp, s1size = float(109.44), 40, 20
-elif s1a == False: s1str, s1avgp, s1size = float(109.54), 35, 50
+if s1a == True: s1str, s1avgp, s1size = float(109.24), 40, 20
+elif s1a == False: s1str, s1avgp, s1size = float(109.34), 35, 5
 
 #risk and win variables
 b1r, s1r = b1avgp * b1size, (100 - s1avgp) * s1size
@@ -26,17 +26,13 @@ b1T, s1T = "Buy " + contract + str(b1str), "Sell " + contract + str(s1str)
 
 
 def fx_write():
-	dir_fd = os.open('results', os.O_RDONLY)
-	def opener(path, flags):
-			return os.open(path, flags, dir_fd=dir_fd)
 
-	with open('results.txt', 'w', opener=opener) as f:
+	with open('results.txt', 'w') as f:
 		for n in range(0,len(stk_rng)): print(stk_rng[n], ',', net_rez[n], file=f)
 
-	with open('b1s1.txt', 'w', opener=opener) as f:
+	with open('b1s1.txt', 'w') as f:
 		for n in range(0,len(stk_rng)): print(b1_rez[n], ',', s1_rez[n], file=f)
 
-	os.close(dir_fd)
-
-
 fx_write()
+
+print(s1_rez)
