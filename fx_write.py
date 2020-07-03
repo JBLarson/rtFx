@@ -1,51 +1,42 @@
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import time
+import sys
+import numpy as np
+import os
 
-from fx_write import b1T, s1T
+ro = lambda n : round(n, ndigits=2)
 
-fig = plt.figure(figsize=(10, 6))
-ax1, ax2 = fig.add_subplot(221), fig.add_subplot(222)
-ax3, ax4 = fig.add_subplot(223), fig.add_subplot(224)
+contract, stk_rng = "USD/JPY>", np.arange(108.50, 109.50, .1)
+
+b1str, b1avgp, b1size = float(109.25), 59, 4
+
+s1a = True
+
+if s1a == True: s1str, s1avgp, s1size = float(109.44), 40, 20
+elif s1a == False: s1str, s1avgp, s1size = float(109.54), 35, 50
+
+#risk and win variables
+b1r, s1r = b1avgp * b1size, (100 - s1avgp) * s1size
+b1w, s1w = ro(100*b1size - (b1r)), ro((abs(s1size)*s1avgp))
+#result lists
+b1_rez = [b1w if stk >= b1str else -b1r for stk in stk_rng]
+s1_rez = [s1w if stk < abs(s1str) else -s1r for stk in stk_rng]
+net_rez = [b1_rez[i]+s1_rez[i] for i in range(len(b1_rez))]
+
+#title variables
+b1T, s1T = "Buy " + contract + str(b1str), "Sell " + contract + str(s1str)
 
 
-def animate():
-    pullData = open("results.txt","r").read()
-    dataArray = pullData.split('\n')
-    pts, net, b1, s1 = [], [], [], []
-    for eachLine in dataArray:
-        if len(eachLine)>1:
-            x,y = eachLine.split(',')
-            pts.append(float(x))
-            net.append(float(y))
-    
-    pullData1 = open("b1s1.txt", "r").read()
-    dataArray1 = pullData1.split('\n')
-    for eachLine in dataArray1:
-        if len(eachLine)>1:
-            j,b = eachLine.split(',')
-            b1.append(float(j))
-            s1.append(float(b))
+def fx_write():
+	dir_fd = os.open('results', os.O_RDONLY)
+	def opener(path, flags):
+			return os.open(path, flags, dir_fd=dir_fd)
 
-    ax1.clear()
-    ax1.stackplot(pts,b1)
-    ax1.set_title(b1T, fontsize=16)
-    ax1.set_ylabel('Result($)', fontsize=14)
-    ax2.clear()
-    ax2.stackplot(pts,s1)
-    ax2.set_title(s1T, fontsize=16)
-    ax2.set_ylabel('Result($)', fontsize=14)
-    ax3.clear()
-    ax3.stackplot(pts,net)
-    ax3.set_ylabel('Net($)', fontsize=14)
-    ax4.clear()
-    ax4.stackplot(pts,b1, labels=['over'])
-    ax4.stackplot(pts,s1, labels=['under'])
-    ax4.stackplot(pts,net, labels=['net'])
-    ax4.set_xlabel('Strike Price', fontsize=16)
-    ax4.set_ylabel('All($)', fontsize=14)
-    plt.legend(loc='lower left')
+	with open('results.txt', 'w', opener=opener) as f:
+		for n in range(0,len(stk_rng)): print(stk_rng[n], ',', net_rez[n], file=f)
 
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+	with open('b1s1.txt', 'w', opener=opener) as f:
+		for n in range(0,len(stk_rng)): print(b1_rez[n], ',', s1_rez[n], file=f)
 
-plt.show()
+	os.close(dir_fd)
+
+
+fx_write()
